@@ -15,7 +15,7 @@
 # Copyright: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License: Apache License Version 2.0
 
-- connection: snowplow
+- connection: snowplow_production
 
 - scoping: true                  # for backward compatibility
 - include: "*.view.lookml"       # include all the views
@@ -23,23 +23,6 @@
 
 - base_view: events  
   joins:
-  - join: web_page
-    foreign_key: events.event_id
-  - join: ad_clicks
-    foreign_key: events.event_id
-    join_type: one_to_one
-  - join: ad_conversions
-    foreign_key: events.event_id
-    join_type: events.event_id
-  - join: ad_impressions
-    foreign_key: event_id
-    join_type: one_to_one
-  - join: link_click
-    foreign_key: events.event_id
-    join_type: one_to_one
-  - join: screen_view
-    foreign_key: events.event_id
-    join_type: one_to_one
   - join: sessions
     sql_on: |
       events.domain_userid = sessions.domain_userid AND
@@ -56,9 +39,3 @@
 
 - base_view: visitors
 
-- base_view: transactions
-
-- base_view: transaction_items
-  joins:
-  - join: transactions
-    sql_foreign_key: transaction_items.ti_orderid

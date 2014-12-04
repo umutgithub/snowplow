@@ -64,6 +64,9 @@
       ti_quantity
       FROM atomic.events
       WHERE domain_userid IS NOT NULL
+      AND
+      -- if prod -- collector_tstamp > '2014-01-01'
+      -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE())
     
     sql_trigger_value: SELECT MAX(collector_tstamp) FROM atomic.events
     distkey: domain_userid
@@ -199,57 +202,6 @@
     
   # Transaction fields #
   
-  - dimension: transaction_order_id
-    sql: ${TABLE}.tr_orderid
-    
-  - dimension: transaction_affiliation
-    sql: ${TABLE}.tr_affiliation
-    
-  - dimension: transaction_value
-    type: number
-    decimals: 2
-    sql: ${TABLE}.tr_total
-    
-  - dimension: transaction_tax
-    type: number
-    decimals: 2
-    sql: ${TABLE}.tr_tax
-    
-  - dimension: transaction_address_city
-    sql: ${TABLE}.tr_city
-    
-  - dimension: transaction_address_state
-    sql: ${TABLE}.tr_state
-    
-  - dimension: transaction_address_country
-    sql: ${TABLE}.tr_country
-  
-  - dimension: transaction_item_order_id
-    sql: ${TABLE}.ti_orderid
-    
-  - dimension: transaction_item_category
-    sql: ${TABLE}.ti_category
-    
-  - dimension: transaction_item_sku
-    sql: ${TABLE}.ti_sku
-    
-  - dimension: transaction_item_name
-    sql: ${TABLE}.ti_name
-    
-  - dimension: transaction_item_price
-    type: number
-    decimals: 2
-    sql: ${TABLE}.ti_price
-    
-  - dimension: transaction_item_quantity
-    type: int
-    sql: ${TABLE}.ti_quantity
-    
-  - dimension: transaction_items_list
-    sql: ${transaction_order_id}
-    html: |
-      <a href=events?fields=events.transaction_items_detail*&f[events.transaction_item_order_id]={{value}}>Transaction Items</a>
-
 # MEASURES #
 
   - measure: count
@@ -267,13 +219,6 @@
     detail: page_views_detail*
     filters:
       event_type: page_view
-      
-  - measure: transactions_count
-    type: count_distinct
-    sql: ${transaction_order_id}
-    filters:
-      event_type: transaction
-    detail: transaction_detail*
 
   - measure: distinct_pages_viewed_count
     type: count_distinct
@@ -294,16 +239,6 @@
     type: number
     decimals: 2
     sql: NULLIF(${page_pings_count},0)/NULLIF(${visitors_count},0)::REAL
-      
-  - measure: transactions_per_session
-    type: number
-    decimals: 3
-    sql: NULLIF(${transactions_count},0)/NULLIF(${sessions_count},0)::REAL
-    
-  - measure: transactions_per_visitor
-    type: number
-    decimals: 2
-    sql: NULLIF(${transactions_count},0)/NULLIF(${visitors_count},0)::REAL
 
   - measure: visitors_count
     type: count_distinct
@@ -357,12 +292,6 @@
     type: number
     decimals: 2
     sql: ${approx_user_usage_in_minutes}/NULLIF(${sessions_count}, 0)::REAL
-
-  - measure: transactions_value
-    type: sum
-    sql: ${transaction_value}
-    filters:
-      event_type: transaction
   
   
   # ----- Detail ------
@@ -391,7 +320,6 @@
       - sessions.visit_duration_seconds
       - count
       - sessions.distinct_pages_viewed
-      - transactions_count
       - sessions.history 
       
     visitors_detail:
@@ -406,24 +334,5 @@
       - visitors.lifetime_distinct_pages_viewed
       - visitors.lifetime_events
       - visitors.event_history
-      - transactions_count
       - visitors.history
 
-    transaction_detail:
-      - transaction_order_id
-      - timestamp_time
-      - user_id
-      - domain_session_index
-      - transaction_value
-      - transaction_address_city
-      - transaction_address_state
-      - transaction_address_country
-      - transaction_items_list
-    
-    transaction_items_detail:
-      - transaction_item_order_id
-      - timestamp_time
-      - transaction_item_sku
-      - transaction_item_name
-      - transaction_item_price
-      - transaction_item_quantity

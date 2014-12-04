@@ -28,7 +28,9 @@
       FROM
         atomic.events
       WHERE domain_userid IS NOT NULL
-        AND domain_userid <> ''
+        AND domain_userid <> ''AND
+        -- if prod -- collector_tstamp > '2014-01-01'
+        -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE())
       GROUP BY 1,2
     
     sql_trigger_value: SELECT MAX(collector_tstamp) FROM ${events.SQL_TABLE_NAME}  # Trigger table generation when new data loaded into atomic.events

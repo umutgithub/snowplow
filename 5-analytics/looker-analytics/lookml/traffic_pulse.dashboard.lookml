@@ -114,7 +114,7 @@
       landing_page: sessions.landing_page_path
       referer_host: sessions.referer_url_host
     sorts: [sessions.count desc]
-    limit: 500
+    limit: 50
     width: 3
     height: 2
     legend_align:
@@ -133,7 +133,7 @@
       landing_page: sessions.landing_page_path
       referer_host: sessions.referer_url_host
     sorts: [sessions.count desc]
-    limit: 500
+    limit: 50
     width: 3
     height: 2
     legend_align:
@@ -145,7 +145,7 @@
     map: world
     base_view: sessions
     dimensions: [sessions.geography_country_three_letter_iso_code]
-    measures: [sessions.count, sessions.events_per_session]
+    measures: [sessions.count]
     listen:
       date: sessions.start_date
       referer_medium: sessions.referer_medium

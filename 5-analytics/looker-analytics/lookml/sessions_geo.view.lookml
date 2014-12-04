@@ -49,7 +49,10 @@
             FIRST_VALUE(geo_zipcode) OVER (PARTITION BY domain_userid, domain_sessionidx ORDER BY dvce_tstamp, event_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS geo_zipcode,
             FIRST_VALUE(geo_latitude) OVER (PARTITION BY domain_userid, domain_sessionidx ORDER BY dvce_tstamp, event_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS geo_latitude,
             FIRST_VALUE(geo_longitude) OVER (PARTITION BY domain_userid, domain_sessionidx ORDER BY dvce_tstamp, event_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS geo_longitude
-          FROM atomic.events) AS a
+          FROM atomic.events
+          WHERE 
+          -- if prod -- collector_tstamp > '2014-01-01'
+          -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE())) AS a
         GROUP BY 1,2,3,4,5,6,7,8
         ) AS v
         LEFT JOIN reference_data.country_codes AS g

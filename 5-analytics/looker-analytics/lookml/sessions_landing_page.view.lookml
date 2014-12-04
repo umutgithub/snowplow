@@ -29,7 +29,10 @@
           domain_sessionidx,
           FIRST_VALUE(page_urlhost) OVER (PARTITION BY domain_userid, domain_sessionidx ORDER BY dvce_tstamp, event_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS page_urlhost,
           FIRST_VALUE(page_urlpath) OVER (PARTITION BY domain_userid, domain_sessionidx ORDER BY dvce_tstamp, event_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS page_urlpath
-        FROM atomic.events) AS a
+        FROM atomic.events
+        WHERE 
+        -- if prod -- collector_tstamp > '2014-01-01'
+        -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE())) AS a
       GROUP BY 1,2,3,4
 
     sql_trigger_value: SELECT COUNT(*) FROM ${sessions_geo.SQL_TABLE_NAME} # Generate this table after the sessions_geo table
