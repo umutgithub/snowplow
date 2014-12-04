@@ -52,7 +52,8 @@
           FROM atomic.events
           WHERE 
           -- if prod -- collector_tstamp > '2014-01-01'
-          -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE())) AS a
+          -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE())
+          ) AS a
         GROUP BY 1,2,3,4,5,6,7,8
         ) AS v
         LEFT JOIN reference_data.country_codes AS g
