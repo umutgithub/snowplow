@@ -28,6 +28,9 @@
       FROM atomic.events
       WHERE domain_userid IS NOT NULL
         AND domain_userid <> ''
+        AND 
+        -- if prod -- collector_tstamp > '2014-01-01'
+        -- if dev  -- collector_tstamp > DATEADD (day, -2, GETDATE()) 
       GROUP BY 1
       
     sql_trigger_value: SELECT COUNT(*) FROM ${sessions.SQL_TABLE_NAME}
