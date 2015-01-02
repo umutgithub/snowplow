@@ -16,9 +16,13 @@
 -- Visitors basic table contains a line per individual website visitor
 -- The standard model identifies visitors using only a first party cookie
 
-DROP TABLE IF EXISTS snowplow_intermediary.visitors_basic;
+-- First create a basic table with simple information per visitor that can be derived from a single table scan
 
-CREATE TABLE snowplow_intermediary.visitors_basic AS (
+DROP TABLE IF EXISTS snowplow_intermediary.visitors_basic;
+CREATE TABLE snowplow_intermediary.visitors_basic 
+	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+	SORTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
   SELECT
     domain_userid,
     MIN(collector_tstamp) AS first_touch,
@@ -30,3 +34,33 @@ CREATE TABLE snowplow_intermediary.visitors_basic AS (
   GROUP BY 1
 );
 
+-- Second combine that table with the different sessions intermediary tables to put together the complete visitors table
+
+DROP TABLE IF EXISTS snowplow_pivots.visitors;
+CREATE TABLE snowplow_pivots.visitors 
+	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+	SORTKEY (domain_userid, last_touch)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
+  SELECT
+    v.domain_userid,
+    v.first_touch,
+    v.last_touch,
+    v.number_of_events,
+    v.distinct_pages_viewed,
+    v.number_of_sessions,
+    l.page_urlhost,
+    l.page_urlpath,
+    s.mkt_source,
+    s.mkt_medium,
+    s.mkt_campaign,
+    s.mkt_term,
+    s.refr_source,
+    s.refr_medium,
+    s.refr_term,
+    s.refr_urlhost,
+    s.refr_urlpath
+  FROM
+    snowplow_intermediary.visitors_basic                  AS v
+    LEFT JOIN snowplow_intermediary.sessions_landing_page AS l ON v.domain_userid = l.domain_userid AND l.domain_sessionidx = 1
+    LEFT JOIN snowplow_intermediary.sessions_source       AS s ON v.domain_userid = s.domain_userid AND s.domain_sessionidx = 1
+);
