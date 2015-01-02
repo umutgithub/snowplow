@@ -18,9 +18,9 @@
 
 DROP TABLE IF EXISTS snowplow_intermediary.sessions_basic;
 CREATE TABLE snowplow_intermediary.sessions_basic 
-	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
-	SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
-	AS (
+  DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
       SELECT
         domain_userid,
         domain_sessionidx,
@@ -32,16 +32,16 @@ CREATE TABLE snowplow_intermediary.sessions_basic
       FROM
         atomic.events
       GROUP BY 1,2,3
-	);
+  );
 
 
 -- Now create a table that assigns a geography to session
 
 DROP TABLE IF EXISTS snowplow_intermediary.sessions_geo;
 CREATE TABLE snowplow_intermediary.sessions_geo 
-	DISTKEY (domain_userid)
-	SORTKEY (domain_userid, domain_sessionidx)
-	AS (                      -- 3. Join with reference_data.country_codes
+  DISTKEY (domain_userid)
+  SORTKEY (domain_userid, domain_sessionidx)
+  AS (                      -- 3. Join with reference_data.country_codes
       SELECT
         v.domain_userid,
         v.domain_sessionidx,
@@ -79,15 +79,15 @@ CREATE TABLE snowplow_intermediary.sessions_geo
         ) AS v
         LEFT JOIN reference_data.country_codes AS g
         ON v.geo_country = g.two_letter_iso_code
-	);
+  );
 
 -- Now create a table that assigns a landing page to each session
 
 DROP TABLE IF EXISTS snowplow_intermediary.sessions_landing_page;
 CREATE TABLE snowplow_intermediary.sessions_landing_page 
-	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
-	SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
-	AS (
+  DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
       SELECT
         domain_userid,
         domain_sessionidx,
@@ -102,15 +102,15 @@ CREATE TABLE snowplow_intermediary.sessions_landing_page
         FROM atomic.events
         ) AS a
       GROUP BY 1,2,3,4
-	);
+  );
 
 -- Now create a table that assigns an exist page to each session
 
 DROP TABLE IF EXISTS snowplow_intermediary.sessions_exit_page;
 CREATE TABLE snowplow_intermediary.sessions_exit_page 
-	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
-	SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
-	AS (
+  DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
       SELECT
         domain_userid,
         domain_sessionidx,
@@ -126,15 +126,15 @@ CREATE TABLE snowplow_intermediary.sessions_exit_page
 
         ) AS a
       GROUP BY 1,2,3,4
-	);
+  );
 
 -- Now create a table that assigns campaign / referer data to each session
 
 DROP TABLE IF EXISTS snowplow_intermediary.sessions_source;
 CREATE TABLE snowplow_intermediary.sessions_source 
-	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
-	SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
-	AS (
+  DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
       SELECT *
       FROM (
         SELECT
@@ -164,15 +164,15 @@ CREATE TABLE snowplow_intermediary.sessions_source
           )
         GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12) AS t
       WHERE "rank" = 1 -- Only pull the first referer for each visit
-	);
+  );
 
 -- Now create a table that technology info per session
 
 DROP TABLE IF EXISTS snowplow_intermediary.sessions_technology;
 CREATE TABLE snowplow_intermediary.sessions_technology 
-	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
-	SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
-	AS (
+  DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  SORTKEY (domain_userid, domain_sessionidx)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
        SELECT
         domain_userid,
         domain_sessionidx,
@@ -244,9 +244,9 @@ CREATE TABLE snowplow_intermediary.sessions_technology
 
 DROP TABLE IF EXISTS snowplow_pivots.sessions;
 CREATE TABLE snowplow_pivots.sessions 
-	DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
-	SORTKEY (domain_userid, domain_sessionidx, session_start_ts)  -- optimized to join on other session_intermediary.session_X tables
-	AS (
+  DISTKEY (domain_userid)  -- optimized to join on other session_intermediary.session_X tables
+  SORTKEY (domain_userid, domain_sessionidx, session_start_ts)  -- optimized to join on other session_intermediary.session_X tables
+  AS (
       SELECT
         s.domain_userid,
         s.domain_sessionidx,
@@ -305,4 +305,4 @@ CREATE TABLE snowplow_pivots.sessions
       LEFT JOIN snowplow_intermediary.sessions_exit_page    AS l2 ON s.domain_userid = l2.domain_userid AND s.domain_sessionidx = l2.domain_sessionidx
       LEFT JOIN snowplow_intermediary.sessions_source       AS s2 ON s.domain_userid = s2.domain_userid AND s.domain_sessionidx = s2.domain_sessionidx
       LEFT JOIN snowplow_intermediary.sessions_technology   AS t  ON s.domain_userid = t.domain_userid  AND s.domain_sessionidx = t.domain_sessionidx
-	);
+  );
