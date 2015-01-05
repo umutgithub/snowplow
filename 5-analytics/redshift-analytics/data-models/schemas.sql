@@ -1,4 +1,4 @@
--- Copyright (c) 2013-2014 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2013-2015 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -10,7 +10,7 @@
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 --
 -- Author(s): Yali Sassoon
--- Copyright: Copyright (c) 2013-2014 Snowplow Analytics Ltd
+-- Copyright: Copyright (c) 2013-2015 Snowplow Analytics Ltd
 -- License: Apache License Version 2.0
 
 CREATE SCHEMA IF NOT EXISTS snowplow_pivots; -- schema with tables that can be directly interfaced via a BI / pivot tool
