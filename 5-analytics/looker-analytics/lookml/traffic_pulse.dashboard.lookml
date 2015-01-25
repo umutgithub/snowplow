@@ -318,7 +318,7 @@
       landing_page: sessions.landing_page_path
       referer_host: sessions.referer_url_host
     sorts: [sessions.count desc]
-    inner_radius: 75%
+    inner_radius: 50
     limit: 500
     width:
     height:
@@ -339,9 +339,9 @@
       landing_page: sessions.landing_page_path
       referer_host: sessions.referer_url_host
     sorts: [sessions.count desc]
-    inner_radius: 75%
+    inner_radius: 50
     limit: 500
-    width:
+    width: 3
     height:
     legend_align:
     sorts: [sessions.events_during_session_tiered]
